@@ -1,0 +1,1434 @@
+\pdfminorversion=4
+\documentclass[]{beamer}
+\mode<presentation>
+
+% beamer stuff
+% Gives us the bottom line with all the goodies
+\useoutertheme{infolines}
+% Just the theme to use. Should be built into bemaer. Setting the
+% height gets rid of a whole lot of whitespace
+\usetheme[height=7mm]{Rochester}
+\usefonttheme{serif}
+% Usually beamer gives you navigation hyperlinks on the bottom
+% right. I turned this off. It's annoying.
+\setbeamertemplate{navigation symbols}{} 
+% Makes my text boxes look pretty
+\setbeamertemplate{blocks}[rounded][shadow=true] 
+% Makes my bullet points 3d balls
+\setbeamertemplate{items}[ball]
+
+% Josh's packages
+\usepackage{multimedia}
+\usepackage{graphicx}
+
+% Packages for me
+\usepackage{amsmath,amssymb,latexsym,amsthm}
+\usepackage[mathscr]{eucal}
+\usepackage{mathrsfs}
+\usepackage{verbatim}
+\usepackage{braket}
+\usepackage{listings}
+\usepackage{xcolor}
+% \usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
+\usepackage{fancybox}
+\usepackage{animate}
+% \usepackage{media9}
+\usepackage{multicol}
+\usepackage{mdframed}
+\usepackage{hyperref}
+%\usepackage{scalerel}
+\usepackage[outline]{contour}
+\contourlength{1.2pt}
+
+% Macros
+
+%Blackboard Bold
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\A}{\mathbb{A}}
+\newcommand{\E}{\mathbb{E}}
+% other
+\newcommand{\eval}{\biggr\rvert} %evaluated at
+\newcommand{\myvec}[1]{\mathbf{#1}} % vectors for me
+% total derivatives 
+\newcommand{\diff}[2]{\frac{d #1}{d #2}} 
+\newcommand{\dd}[1]{\frac{d}{d #1}}
+% partial derivatives
+\newcommand{\pd}[2]{\frac{\partial #1}{\partial #2}} 
+\newcommand{\pdd}[1]{\frac{\partial}{\partial #1}} 
+% Order operator
+\DeclareRobustCommand{\orderof}{\ensuremath{\mathcal{O}}}
+
+% braces
+\newcommand{\paren}[1]{\left( #1 \right)}
+\newcommand{\sqrbrace}[1]{\left[ #1 \right]}
+\newcommand{\curlybrace}[1]{\left\{ #1 \right\}}
+\newcommand{\inner}[1]{\paren{#1}}
+\newcommand{\norm}[1]{\left| #1 \right|_2}
+
+% g
+\newcommand{\detg}{\sqrt{-g}}
+
+% neutrinos
+\newcommand{\eepsilon}{\epsilon} % energy
+\newcommand{\fin}{f\in \{\nu_e,\nu_{\bar{e}},\nu_x\}}
+\newcommand{\sign}{\text{sign}(f)}
+\newcommand{\jnuf}{j_{\eepsilon,f}}
+\newcommand{\etanuf}{\eta_{\eepsilon,f}}
+\newcommand{\Inuf}{I_{\eepsilon,f}}
+\newcommand{\chinuf}{\chi_{\eepsilon,f}}
+\newcommand{\sigmanuf}{\sigma_{\eepsilon,f}}
+\newcommand{\alphanuf}{\alpha_{\eepsilon,f}}
+\newcommand{\numin}{\nu_{\text{min}}}
+\newcommand{\numax}{\nu_{\text{max}}}
+
+
+% tikz
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usetikzlibrary{calc,fadings,decorations.pathreplacing}
+\usetikzlibrary{arrows}
+\usetikzlibrary{decorations.pathmorphing}
+\usetikzlibrary{decorations.markings}
+\usetikzlibrary{arrows.meta,bending}
+
+% Keys to support piece-wise uncovering of elements in TikZ pictures:
+% \node[visible on=<2->](foo){Foo}
+% \node[visible on=<{2,4}>](bar){Bar}   % put braces around comma expressions
+% 
+% Internally works by setting opacity=0 when invisible, which has the 
+% adavantage (compared to \node<2->(foo){Foo} that the node is always there, hence
+% always consumes space plus that coordinate (foo) is always available.
+% 
+% The actual command that implements the invisibility can be overriden
+% by altering the style invisible. For instance \tikzsset{invisible/.style={opacity=0.2}}
+% would dim the "invisible" parts. Alternatively, the color might be set to white, if the
+% output driver does not support transparencies (e.g., PS) 
+% 
+\tikzset{
+  invisible/.style={opacity=0},
+  visible on/.style={alt={#1{}{invisible}}},
+  alt/.code args={<#1>#2#3}{%
+    \alt<#1>{\pgfkeysalso{#2}}{\pgfkeysalso{#3}} % \pgfkeysalso doesn't change the path
+  },
+}
+
+% some nice flowchart features
+\tikzset{
+    mynode/.style={rectangle,rounded corners,draw=black, top color=white, bottom color=yellow!50,very thick, inner sep=1em, minimum size=3em, text centered},
+    myimgnode/.style={rectangle,rounded corners,draw=black, top color=white, bottom color=yellow!50,very thick, inner sep=0.25em, minimum size=3em, text centered},
+    myarrow/.style={->, >=latex', shorten >=2pt, thick},
+    mylabel/.style={text width=8em, text centered} 
+}  
+
+% squigly arrow
+\tikzset{zigzag it/.style={decorate, decoration=zigzag}}
+
+% Color morphing arrow
+\tikzset{colormorph/.style n args={3}{
+    postaction={
+    decorate,
+    decoration={
+    markings,
+    mark=between positions 0 and \pgfdecoratedpathlength step 0.5pt with {
+    \pgfmathsetmacro\myval{multiply(
+        divide(
+        \pgfkeysvalueof{/pgf/decoration/mark info/distance from start}, \pgfdecoratedpathlength
+        ),
+        100
+    )};
+    \pgfsetfillcolor{#3!\myval!#2};
+    \pgfpathcircle{\pgfpointorigin}{#1};
+    \pgfusepath{fill};}
+}}}}
+
+% define a really nice visible "purple"
+\definecolor{gimppurple}{HTML}{AD26FB}
+% a light grey
+\definecolor{lightgrey}{HTML}{E0E0E0}
+% for highlighting
+\definecolor{deepblue}{rgb}{0,0,0.5}
+\definecolor{deepred}{rgb}{0.6,0,0}
+\definecolor{deepgreen}{rgb}{0,0.5,0}
+
+% fonts
+% Default fixed font does not support bold face
+\DeclareFixedFont{\ttb}{T1}{txtt}{bx}{n}{12} % for bold
+\DeclareFixedFont{\ttm}{T1}{txtt}{m}{n}{12}  % for normal
+
+% Python style for highlighting
+\newcommand\pythonstyle{\lstset{
+language=Python,
+basicstyle=\ttm,
+otherkeywords={self},
+keywordstyle=\ttb\color{deepblue},
+emph={__init__},           
+emphstyle=\ttb\color{deepred},
+commentstyle=\ttfamily\color{deepred},
+stringstyle=\color{deepgreen},
+frame=tb,                     
+showstringspaces=false        
+}}
+
+% Python environment
+\lstnewenvironment{python}[1][]
+{
+\pythonstyle
+\lstset{#1}
+}
+{}
+
+\newcommand{\backupbegin}{
+   \newcounter{finalframe}
+   \setcounter{finalframe}{\value{framenumber}}
+}
+\newcommand{\backupend}{
+   \setcounter{framenumber}{\value{finalframe}}
+}
+
+% Automatically generates section breaker slides
+\AtBeginSection[]{
+  \begin{frame}[plain]
+  \vfill
+  \centering
+  \begin{beamercolorbox}[sep=8pt,center,shadow=true,rounded=true]{title}
+    \usebeamerfont{title}\insertsectionhead\par%
+  \end{beamercolorbox}
+  \vfill
+  \end{frame}
+}
+
+\title[Kilonovae]{Kilonova and r-Process Nucleosynthesis}
+% \subtitle{Models and Implications}
+\author[J. Miller]{\textcolor{blue}{Jonah M. Miller}, \color{black}in collaboration with:\\
+  \color{red}K. Lund, G. McLaughlin, M. Mumpower,\\
+\color{black}And Many More...}
+\institute[LANL]{Los Alamos National Laboratory}
+% \titlegraphic{\vspace{1cm}}
+% \titlegraphic{\includegraphics[height=0.25\textheight]{3d_render}}
+% \date[9/19/19]{LA Astro Seminar}
+\date[INT]{Astrophysical Neutrinos\\and the Origin of the Elements}
+
+\graphicspath{{figures/}}
+
+\begin{document}
+
+\begin{frame}[plain]
+    \tikz [remember picture, overlay] 
+    \node at ([xshift=2cm,yshift=-2cm]current page.west)
+    {\includegraphics[width=0.25\textwidth,clip,trim={150 0 150 0}]{3d_render}};
+    \tikz [remember picture, overlay] 
+    \node at ([xshift=-2cm,yshift=-2cm]current page.east)
+    {\includegraphics[width=0.25\textwidth,clip,trim={0 0 0 0}]{visit0006-gimp3}};
+  \titlepage
+\end{frame}
+
+\begin{frame}[plain]
+  \begin{itemize}
+  \item This Document cleared for unlimited release with LA-UR-XX-XXXX
+  \item The submitted materials have been authored by an employee or
+    employees of Triad National Security, LLC (Triad) under contract
+    with the U.S.  Department of Energy/National Nuclear Security
+    Administration (DOE/NNSA).  Accordingly, the U.S. Government
+    retains an irrevocable, nonexclusive, royalty- free license to
+    publish, translate, reproduce, use, or dispose of the published
+    form of the work and to authorize others to do the same for
+    U.S. Government purposes.”
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Cosmic Gold}
+  \begin{center}
+    \includegraphics[width=0.9\textwidth]{quantagold_19201}
+  \end{center}
+  Ashley Mackenzie for Quanta Magazine, March 23, 2017
+\end{frame}
+
+\begin{frame}
+  \frametitle{The 170817 Merger}
+  \begin{center}
+    \includegraphics[height=7cm]{abbot-timeline}
+  \end{center}
+  Abbot+, 2017
+\end{frame}
+
+\begin{frame}
+  \frametitle{The 170817 Merger}
+  \begin{center}
+    \resizebox{\columnwidth}{!}{
+      \begin{tikzpicture}
+        \node[inner sep=0pt] (tl) at (0,0)
+        {\includegraphics[height=5cm]{abbot-timeline}};
+        \node[inner sep=0pt] (gy) at (4,1)
+        {\includegraphics[width=8cm]{GWTC-3_stellar-graveyard_diamond}};
+      \end{tikzpicture}
+      }
+  \end{center}
+  {\footnotesize Abbot+, 2017, Aaron Geller/LIGO-VIRGO-KAGRA}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Neutron Stars}
+  \begin{center}
+    \includegraphics[width=0.9\textwidth]{ns-manhattan}
+  \end{center}
+  Wikimedia Commons
+\end{frame}
+
+\begin{frame}
+  \frametitle{Neutron Star Mergers: A 2+ Component Model}
+  \begin{columns}
+    \begin{column}{6cm}
+      \begin{center}
+        \includegraphics[width=0.9\textwidth]{frames/betabin_000}
+        % \animategraphics[width=0.9\textwidth,every=10,autoplay,loop,controls]
+        % {5}{frames/betabin_}{000}{374}
+      \end{center}
+    \end{column}
+    \begin{column}{6cm}
+      \begin{center}
+        \resizebox{\columnwidth}{!}{
+          \begin{tikzpicture}
+            \coordinate (origin) at (0,0);
+            \pgfmathsetmacro{\dbx}{0.5}
+            \pgfmathsetmacro{\dby}{0.05}
+            \pgfmathsetmacro{\dex}{2.}
+            \pgfmathsetmacro{\dey}{0.25}
+            \pgfmathsetmacro{\dcc}{2.1}
+            \pgfmathsetmacro{\tcx}{5.0}
+
+            \foreach \i in {-1,1}
+            {
+              \fill[ball color=blue] (0, \i*2.9) ellipse (2 and 3);
+            }
+
+            \foreach \i in {-1,1}
+            {
+              % disk
+              \fill[color=orange]
+              (\i*\dbx,\dby) -- (\i*\dex,\dey)
+              .. controls (\i*\dcc,0) .. (\i*\dex,-\dey)
+              -- (\i*\dbx,-\dby) -- cycle;
+
+              % tidal ejecta
+              \fill[color=red] (\i*\tcx,0) ellipse (0.75 and 1.5);
+            }
+
+            % viewing
+            \draw[dashed,ultra thick,black] (origin) -- (5,4);
+            \draw[dashed,ultra thick,black] (origin) -- (3,6);
+            \fill[color=gray,opacity=0.5] (origin) -- (5,4) -- (3,6) -- cycle;
+            \node[right,align=left] at (3.5,5)
+            {\Large $\sim$ GW170817\\ \Large Viewing angle};
+
+            % bh
+            \shade[ball color=black] (origin) circle (0.25);
+
+            % text
+            \draw[<-,red, ultra thick] (\tcx,1.5)
+            -- ++(0.,0.5) -- ++(0.5,0)
+            node[right,align=left]
+            {\Large \color{red}$n$-rich\\\Large Tidal Ejecta\\ \Large $\sim 5\times 10^{-3}M_{\odot}$};
+
+            \draw[<-,blue, ultra thick] (0,6) -- ++(0,1) -- ++(-2,0)
+            node[left,align=right]
+            {\Large \color{blue}$n$-poor\\\Large disk wind\\\Large $\sim 10^{-2}M_{\odot}$};
+
+            \draw[<-,orange, ultra thick] (\dex,-\dey)
+            -- ++(2,-3) -- ++(1,0)
+            node[right,align=left]
+            {\Large \color{orange}Disk\\\Large $\sim 10^{-1}M_{\odot}$};
+
+            \draw[<-,black, ultra thick] (-0.25,-0.25)
+            -- ++(-2,-3) -- ++(-1,0)
+            node[left,align=right]
+            {\Large \color{black}Black Hole\\ \Large $\sim 2 M_{\odot}$};
+          \end{tikzpicture}
+        }
+      \end{center}
+    \end{column}
+  \end{columns}
+  \begin{tiny}
+    Co-design summer school, 2016
+  \end{tiny}
+\end{frame}
+
+\begin{frame}
+  \frametitle{The r-process}
+  \begin{center}
+   \includegraphics[width=0.9\textwidth]{skynet_ye_0p13/frame_0001}
+  \end{center}
+  Courtesy of J. Lippuner
+\end{frame}
+
+\begin{frame}
+  \frametitle{The r-process}
+  \begin{center}
+    \includegraphics[width=0.9\textwidth]{skynet_ye_0p13/frame_0001}
+    % \animategraphics[width=0.9\textwidth,every=5,autoplay,loop,controls]
+    % {5}{skynet_ye_0p13/frame_}{0001}{0108}
+  \end{center}
+  Courtesy of J. Lippuner
+\end{frame}
+
+\begin{frame}
+  \frametitle{Opacity}
+  %\setlength{\unitlength}{1cm}
+  \resizebox{12cm}{!}{
+    \begin{tikzpicture}
+      \node[inner sep=0pt] (rp) at (0,0)
+      {\includegraphics[width=10cm]{skynet_ye_0p13/frame_0108}};
+      \draw[ultra thick,red,<-] (1.5,-2) -- (2,-2.85)
+      -- (2.25, -2.85) node[right] {\tiny Opaque to visible light};
+      \draw[ultra thick,red,<-] (0.85,-2) -- (0.5,-2.85)
+      -- (0.25,-2.85) node[left] {\tiny Not opaque};
+    \end{tikzpicture}
+  }
+\end{frame}
+
+\begin{frame}
+  \frametitle{The Kilonova}
+  \begin{center}
+    \includegraphics[width=10cm]{swope-image}
+  \end{center}
+  M2H/UC Santa Cruz and Carnegie Observatories/Ryan Foley
+\end{frame}
+
+\begin{frame}
+  \frametitle{The Makings of a Kilonova}
+  \begin{itemize}
+  \item {\color{red}Duration/relevant time scales}
+  \item {\color{blue}Methods}
+  \end{itemize}
+  \resizebox{12cm}{!}{
+    \begin{tikzpicture}[node distance=9em]
+      \node[myimgnode] (merger) {\includegraphics[width=6em]{frames/betabin_100}};
+      \node[myimgnode, right of=merger] (disk) {\includegraphics[width=6em]{disk_image_no_text}};
+      \node[myimgnode, right of=disk] (nuc) {\includegraphics[width=6em]{skynet_ye_0p13/frame_0108}};
+      \node[myimgnode, right of=nuc] (rad) {\includegraphics[width=6em]{spectral_evolution}};
+      \node[mylabel, below of=merger] (merger label)
+      {\small In-spiral:\\
+        \color{red}$\sim$ $\mu$s$\to$30 s\\
+        \color{blue}numerical relativity\\
+        \color{black}ET, SpEC, etc.
+      };
+      \node[mylabel, below of=disk] (disk label)
+      {\small Disk+GRB:\\
+        \color{red}$\sim$ $\mu$s$\to$1 s\\
+        \color{blue}GR$\nu$RMHD\\
+        \color{black}$\nu${\tt bhlight, HARM}
+      };
+      \node[mylabel, below of=nuc] (nuc label)
+      {\small Non-equilibrium reactions:\\
+        \color{red}$\sim$ s$\to$hours$\to$Myrs\\
+        \color{blue}Reaction network\\
+        \color{black}PRISM, SkyNet
+      };
+      \node[mylabel, below of=rad] (rad label)
+      {\small Photon transport:\\
+        \color{red}$\sim$ Weeks\\
+        \color{blue}DDMC-IMC\\
+        \color{black}{\tt SuperNu,sedona}
+      };
+
+      \draw[myarrow] (merger) -- (disk);
+      \draw[myarrow] (disk) -- (nuc);
+      \draw[myarrow] (nuc) -- (rad);
+      \draw[myarrow] (merger label) -- (merger);
+      \draw[myarrow] (disk label) -- (disk);
+      \draw[myarrow] (nuc label) -- (nuc);
+      \draw[myarrow] (rad label) -- (rad);
+    \end{tikzpicture}
+  }
+\end{frame}
+
+\begin{frame}
+  \frametitle{The Makings of a Kilonova}
+  \resizebox{12cm}{!}{
+    \begin{tikzpicture}[node distance=7em]
+      \node[myimgnode] (merger) {\includegraphics[width=5em]{frames/betabin_100}};
+      \node[mylabel, above right of=merger] (EOS) {\small Nuclear EOS};
+      \node[myimgnode, below right of=EOS] (disk) {\includegraphics[width=5em]{disk_image_no_text}};
+      \node[mylabel, above right of=disk] (nu) {\small $\nu$-interactions};
+      \node[myimgnode, below right of=nu] (nuc) {\includegraphics[width=6em]{skynet_ye_0p13/frame_0108}};
+      \node[mylabel, above right of=nuc] (en) {\small Energy levels};
+      \node[myimgnode, below right of=en] (rad) {\includegraphics[width=5em]{spectral_evolution}};
+
+      \node[mylabel, below of=disk] (disk inputs)
+      {neutrino emissivities,\\scattering,\\opacities};
+
+      \node[mylabel, below of=nuc] (nuc inputs)
+      {nuclear energies,\\rates};
+
+      \node[mylabel, below of=rad] (rad inputs)
+      {Atomic energies,\\photon opacities,\\abundances,\\(n)LTE};
+
+      \draw[myarrow] (EOS) -- (merger);
+      \draw[myarrow] (EOS) -- (disk);
+      \draw[myarrow] (nu) -- (disk);
+      \draw[myarrow] (nu) -- (nuc);
+      \draw[myarrow] (en) -- (nuc);
+      \draw[myarrow] (en) -- (rad);
+
+      \draw[myarrow] (nuc inputs) -- (nuc);
+      \draw[myarrow] (rad inputs) -- (rad);
+      \draw[myarrow] (disk inputs) -- (disk);
+
+      \draw[myarrow] (merger) -- (disk);
+      \draw[myarrow] (disk) -- (nuc);
+      \draw[myarrow] (nuc) -- (rad);
+    \end{tikzpicture}
+  }
+\end{frame}
+
+\begin{frame}
+  \frametitle{Nuclear Physics Feeds Directly into Observables}
+  \resizebox{12cm}{!}{
+    \begin{tikzpicture}
+      \node[inner sep=0pt] (isomer) at (0,0) {\includegraphics[width=0.5\textwidth]{misch-astromer-heating}};
+      \node[align=center] at (0.25,3.25) (isomerlabel) {Astromers};
+      \node[align=center] at (0.25,-3.25) (wendell) {\small Misch et al., ApJL \textbf{913} L2, (2021)};
+      \node[inner sep=0pt] at (-7, 2.5) {\includegraphics[width=0.6\textwidth]{mumpower-fission}};
+      \node[align=center] at (-6.75, 4.75) {Fission Yields};
+      \node[align=center] at (-6.75, 0.25) {\small Vassh et al., ApJ \textbf{896} 28 (2020)};
+      \node[inner sep=0pt] (heating rates) at (-5.5,-2) {\includegraphics[height=0.4\textheight]{heatingbandasyKarpovye16}};
+      \node[align=right] at (-9, -1) {Heating rates\\+mass models};
+      \node[align=center] at (-5.5,-4) {\small Zhu et al., ApJ \textbf{906} 94, (2021)};
+    \end{tikzpicture}
+  }
+\end{frame}
+
+\begin{frame}
+  \frametitle{Nucleosynthesis Feeds Directly into Observables}
+  \begin{columns}
+    \begin{column}{5cm}
+      \begin{center}
+        \includegraphics[width=0.9\columnwidth]{composition-effects-presence-of-uranium}
+      \end{center}
+      {\tiny Even,...,\textbf{JMM}, et al. ApJ \textbf{899} 24 (2020)}
+    \end{column}
+    \begin{column}{7cm}
+      \begin{center}
+        \includegraphics[width=0.9\columnwidth]{cain-r-process-metal-poor}\\
+        {\tiny Cain et al. ApJ \textbf{898} 40 (2020)}
+      \end{center}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Major Uncertainties in Light Curve Modeling}
+  \begin{columns}
+    \begin{column}{6cm}
+      \begin{center}
+        \includegraphics[width=0.9\columnwidth]{composition-effects-presence-of-uranium}
+      \end{center}
+      \begin{itemize}
+      \item Not all opacities known, so surrogates often used. Some
+        elements matter more than others. Non-equilibrium (nLTE)
+        effects important at late times.
+      \end{itemize}
+      {\footnotesize arXiv:1904.13298}
+    \end{column}
+    \begin{column}{6cm}
+      \begin{center}
+        \includegraphics[height=0.5\textheight]{ejecta_vz_vr}
+      \end{center}
+      \begin{itemize}
+      \item Geometric effects can be significant, are difficult to
+        treat, and are degenerate with other parameters, such as
+        ejecta mass.
+      \end{itemize}
+      {\footnotesize arXiv:204.00102}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Lets Talk About the Disk}
+  \begin{center}
+    \resizebox{12.cm}{!}{
+      \begin{tikzpicture}
+        \filldraw[black] (0,0) rectangle ++(12,8);
+        \node[inner sep=0pt] (wind) at (3,4)
+        {\includegraphics[width=0.5\textwidth]{wind-3d-render}};
+        \node[inner sep=0pt,rectangle,blue,ultra thick] (disk) at (9,5)
+        {\includegraphics[width=0.4\textwidth]{disk_image_no_text}};
+        \draw[blue,ultra thick] (6.5,3.5) rectangle ++(5,3.);
+        \draw[blue,ultra thick] (3,4) -- (6.5,6.5);
+        \draw[blue,ultra thick] (3,4) -- (6.5,3.5);
+      \end{tikzpicture}
+      %\includegraphics[width=7cm]{disk_3d_render}
+      }
+  \end{center}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Neutrino Transport Matters!}
+  \begin{center}
+    \includegraphics[height=0.8\textheight]{leptoneq/frame_0001}
+    % \animategraphics[height=0.8\textheight,every=5,autoplay,loop,controls]
+    % {5}{leptoneq/frame_}{0001}{0101}
+  \end{center}
+  \begin{tiny}
+    \textbf{JMM}, B. R. Ryan, J. C. Dolence. ApJS \textbf{241} 30 (2019) 
+  \end{tiny}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Ingredients In Kilonova Disk Modeling}
+  \begin{itemize}
+  \item General relativity
+    \begin{itemize}
+    \item Rotating black hole spacetime
+    \end{itemize}
+  \item Plasma physics
+    \begin{itemize}
+    \item Ideal magnetohydrodynamics
+    \end{itemize}
+  \item Nuclear physics
+    \begin{itemize}
+    \item Hot gas treated as being in nuclear-statistical equilibrium via \textbf{equation of state}
+    \item Cooling outflow treated in postprocessing via \textbf{nuclear reaction networks}
+    \end{itemize}
+  \item Radiation physics
+    \begin{itemize}
+    \item Material is opaque to photons, can be incorporated in plasma physics
+    \item Material \textit{not} opaque to \textbf{neutrinos}.
+    \item Neutrinos can \textit{change the composition of the
+        material} by converting neutrons to protons and vice versa.
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Ingredients in Kilonova Disk Modeling}
+  \begin{itemize}
+  \item Mass conservation:
+    \begin{small}
+      \begin{displaymath}
+        \partial_t \paren{{\color{red}\detg}\rho_0 u^t}
+        + \partial_i\paren{{\color{red}\detg}\rho_0u^i} = 0
+      \end{displaymath}
+    \end{small}
+  \item Momentum and Internal Energy Conservation:
+    \begin{small}
+      \begin{displaymath}
+        \partial_t\sqrbrace{{\color{red}\detg} \paren{T^t_{\ \nu} + \rho_0u^t \delta^t_\nu}}
+        + \partial_i\sqrbrace{{\color{red}\detg}\paren{T^i_{\ \nu} + \rho_0 u^i \delta^t_\nu}}
+        = {\color{red}\detg} \paren{T^\kappa_{\ \lambda} {\color{red}\Gamma^\lambda_{\nu\kappa}} + {\color{blue}G_\nu}}
+      \end{displaymath}
+    \end{small}
+  \item Magnetic Fields
+    \begin{small}
+      \begin{displaymath}
+        \partial_t \paren{{\color{red}\detg} B^i}
+        - \partial_j \sqrbrace{{\color{red}\detg}\paren{b^ju^i - b^i u^j}}
+        = 0
+      \end{displaymath}
+    \end{small}
+  \item Composition
+    \begin{small}
+      \begin{displaymath}
+        \partial_t\paren{{\color{red}\detg}\rho_0 Y_e u^t}
+        + \partial_i\paren{{\color{red}\detg}\rho_0Y_eu^i}
+        = {\color{red}\detg} {\color{blue}G_{\text{ye}}}
+      \end{displaymath}
+    \end{small}
+  \item Neutrino Transport
+    \begin{small}
+      \begin{displaymath}
+        {\color{red}\frac{D}{d\lambda}}\paren{\frac{h^3\Inuf}{\eepsilon^3}}
+        = \paren{\frac{h^2{\color{blue}\etanuf}}{\eepsilon^2}}
+        - \paren{\frac{\eepsilon {\color{blue}\chinuf}}{h}} \paren{\frac{h^3\Inuf}{\eepsilon^3}},
+      \end{displaymath}
+    \end{small}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Presenting $\nu\texttt{bhlight}$!}
+  \begin{itemize}
+  \item General relativistic radiation magnetohydrodynamics for
+    kilonova disks
+  \item Open Source! {\color{blue}\url{https://github.com/LANL/nubhlight}}
+  \item \textbf{Magnetized gas} via \textit{finite volume methods}
+    \begin{itemize}
+    \item Standard second-order Gudonov scheme
+    \item Cell-centered constrained transport for magnetic fields
+    \item WENO5 reconstruction
+    \item Local Lax-Friedrichs Riemann solver
+    \end{itemize}
+  \item \textbf{Neutrinos} via \textit{Monte Carlo methods}
+    \begin{itemize}
+    \item Explicit integration along geodesics
+    \item Probabilistic emissivity, absorption, and scattering
+    \item Novel biasing scheme ensures all processes well-sampled
+    \end{itemize}
+  \item \textbf{Coupled} via \textit{operator splitting}
+  \item Built on top of $\texttt{HARM}$, $\texttt{grmonty}$, and
+    $\texttt{bhlight}$.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{The August 2017 Disk}
+  \begin{center}
+    \includegraphics[height=0.475\textheight]{gw170817disk_Ye_close/frame_0831} \\
+    \includegraphics[height=0.475\textheight]{gw170817disk_Ye_far/frame_0831} 
+    % \animategraphics[height=0.475\textheight,every=5,autoplay,loop,controls=off]
+    % {10}{gw170817disk_Ye_close/frame_}{0001}{0837} \\
+    % \animategraphics[height=0.475\textheight,every=5,autoplay,loop,controls=off]
+    % {10}{gw170817disk_Ye_far/frame_}{0001}{0837} 
+  \end{center}
+  %\textbf{JMM}+, in prep.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Neutrino Transport in the Disk}
+  \begin{center}
+    \includegraphics[width=0.9\textwidth]{nphys_frames/frame_00531}
+    %\animategraphics[width=0.9\textwidth,every=10,autoplay,loop,controls=off]
+    %{20}{nphys_frames/frame_}{00001}{00965}
+  \end{center}
+  \begin{tiny}
+    \textbf{JMM} et al. PRD \textbf{100} 023008 (2019)
+  \end{tiny}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Electron Fraction of the Outflow}
+  \begin{columns}
+    \begin{column}{6cm}
+      \includegraphics[height=0.9\textheight]{gw170817-ye-vs-theta-folded-5}\\
+      \begin{tiny}
+        \textbf{JMM} et al. PRD \textbf{100} 023008 (2019)
+      \end{tiny}
+    \end{column}
+    \begin{column}{6cm}
+      \resizebox{\columnwidth}{!}{
+        \begin{tikzpicture}
+          \tikzfading[name=fade inside,
+          inner color=transparent!50,
+          outer color=transparent!50]
+          
+          \coordinate (origin) at (0,0);
+          \pgfmathsetmacro{\dbx}{0.5}
+          \pgfmathsetmacro{\dby}{0.05}
+          \pgfmathsetmacro{\dex}{2.}
+          \pgfmathsetmacro{\dey}{0.25}
+          \pgfmathsetmacro{\dcc}{2.1}
+          \pgfmathsetmacro{\tcx}{5.0}
+          
+          % extraction surface
+          \shade[ball color=gray,path fading=fade inside,opacity=0.75] (origin) circle (4);
+
+          \foreach \i in {-1,1}
+          {
+            \fill[ball color=blue] (0, \i*2.9) ellipse (2 and 3);
+          }
+          
+          \foreach \i in {-1,1}
+          {
+            % disk
+            \fill[color=orange]
+            (\i*\dbx,\dby) -- (\i*\dex,\dey)
+            .. controls (\i*\dcc,0) .. (\i*\dex,-\dey)
+            -- (\i*\dbx,-\dby) -- cycle;
+          }
+          
+          % bh
+          \shade[ball color=black] (origin) circle (0.25);
+                    
+          % text
+          \draw[<-,blue, ultra thick] (0,6) -- ++(0,1) -- ++(-2,0)
+          node[left,align=right]
+          {\Large \color{blue}$n$-poor\\\Large disk wind\\\Large $\sim 10^{-2}M_{\odot}$};
+          
+          \draw[<-,orange, ultra thick] (\dex,-\dey)
+          -- ++(2,-3) -- ++(1,0)
+          node[right,align=left]
+          {\Large \color{orange}Disk\\\Large $\sim 10^{-1}M_{\odot}$};
+          
+          \draw[<-,black, ultra thick] (-0.25,-0.25)
+          -- ++(-2,-3) -- ++(-1,0)
+          node[left,align=right]
+          {\Large \color{black}Black Hole\\ \Large $\sim 2 M_{\odot}$};
+
+          \draw[<-,black,ultra thick] (2.5,3.5)
+          -- ++(0.5,0.5) -- ++(0.5,0) node[right,align=left]
+          {\Large \color{black}Extraction\\\Large surface};
+        \end{tikzpicture}
+      }
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Nucleosynthesis}
+  \begin{columns}
+    \begin{column}{9cm}
+      \begin{center}
+        \includegraphics[width=\columnwidth]{gw170817-yields-2}
+      \end{center}
+      \begin{tiny}
+        \textbf{JMM} et al. PRD \textbf{100} 023008 (2019)
+      \end{tiny}
+    \end{column}
+    \begin{column}{3cm}
+      \begin{itemize}
+      \item r-process networks:
+        \begin{itemize}
+        \item SkyNet
+        \item PRISM
+        \item CFNET
+        \item etc.
+        \end{itemize}
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Spectra}
+  \begin{center}
+    \includegraphics[width=\columnwidth]{spectral_evolution}
+  \end{center}
+\end{frame}
+
+\begin{frame}
+  \frametitle{A Zoo of Possible Disks!}
+  \begin{center}
+    \resizebox{12cm}{!}{
+      \begin{tikzpicture}
+        \node[inner sep=0pt] (klund) at (0,2)
+        {\includegraphics[height=3.5cm]{klund/tracer_cuts_light_j}};
+        \node[inner sep=0pt] (scurtis) at (-3,-2)
+        {\includegraphics[height=3.5cm]{bhns_curtis/total_abun_disks_dec22}};
+        \node[inner sep=0pt] (valeria) at (3, -2)
+        {\includegraphics[height=3.5cm]{jet-opening/sigmaconxz5799_lvl1_800}};
+        \draw (-4,3) node[left,align=right] {K. Lund,\\In Prep};
+        \draw (-3.5,0) node {\footnotesize S. Curtis, \textbf{JMM}, et al., ApJL 945};
+        \draw (3, 0) node {\footnotesize V. Urrutia-Hurtado, In Prep};
+      \end{tikzpicture}
+      }
+  \end{center}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Big Open Questions and Modeling Uncertainties}
+  \begin{itemize}
+  \item Oscillations (Great recent work by S. Richers, V. Cirgliano, M.-R. Wu, X. Li, and D. Siegel)
+    \begin{itemize}
+    \item See P. Mukhopadhyay at this workshop
+    \end{itemize}
+  \item Huge zoo of possible set of merger parameters
+    \begin{itemize}
+    \item See M. Ristic, S. Curtis, K. Lund, B. Barker
+    \end{itemize}
+  \item Nuclear reaction rates and r-process
+    \begin{itemize}
+    \item K. Lund, G. McLaughlan, M. Mumpower
+    \end{itemize}
+  \item Mapping from disk/merger outflow to homologous expansion phase
+    \begin{itemize}
+    \item S. Curtis
+    \end{itemize}
+  \item Opacities and composition of elements
+  \item Multi-dimensional radiation transport
+  \item Nuclear equation of state
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{The Future}
+  \begin{itemize}
+  \item Large optical depths, such as inside a neutron star present issues for Monte Carlo
+  \item Need a method that can span the range of optical depths and solve the full transport equation
+  \item A few flavors. See, e.g., Foucart, Radice, Mullen. My favorite is MOCMC.
+  \end{itemize}
+  \begin{center}
+    \includegraphics[width=\textwidth]{mocmc-diagram};
+  \end{center}
+  {\footnotesize Ryan and Dolence, ApJ \textbf{891} 118, (2020).}
+\end{frame}
+
+\begin{frame}
+  \frametitle{The Future}
+  \begin{columns}
+    \begin{column}{6cm}
+      \begin{center}
+        \includegraphics[height=8cm]{tov_fig_paper}
+      \end{center}
+    \end{column}
+    \begin{column}{6cm}
+      \begin{center}
+        \includegraphics[height=6cm]{parth-hydro-scaling_weak}
+      \end{center}
+      {\footnotesize Grete, \textbf{JMM}, et al., ArXiv:2202.12309}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Take-home Message}
+    \resizebox{12cm}{!}{
+    \begin{tikzpicture}[node distance=9em]
+      \node[myimgnode] (merger) {\includegraphics[width=6em]{frames/betabin_100}};
+      \node[myimgnode, right of=merger] (disk) {\includegraphics[width=6em]{disk_image_no_text}};
+      \node[myimgnode, right of=disk] (nuc) {\includegraphics[width=6em]{skynet_ye_0p13/frame_0108}};
+      \node[myimgnode, right of=nuc] (rad) {\includegraphics[width=6em]{spectral_evolution}};
+      \draw[myarrow] (merger) -- (disk);
+      \draw[myarrow] (disk) -- (nuc);
+      \draw[myarrow] (nuc) -- (rad);
+    \end{tikzpicture}
+  }
+  \begin{itemize}
+  \item Neutron star mergers are awesome!
+    \begin{itemize}
+    \item Source of GRBs, heavy elements, kilonova afterglow,
+      gravitational waves
+    \end{itemize}
+  \item Despite huge successes so far, connecting an observation to an
+    astrophysical system is complicated and challenging:
+    \begin{itemize}
+    \item Involves \textbf{all four fundamental forces}, many different physical processes, modeled by very different codes/capabilities
+    \item Many \textbf{degeneracies} between astrophysical uncertainty, microphysical uncertainty, etc.
+    \end{itemize}
+  \item Now must tamp down on these uncertainties in each domain
+  \end{itemize}
+\end{frame}
+
+\backupbegin
+
+% \begin{frame}
+%   \frametitle{Transport Techniques}
+%   \begin{columns}
+%     \begin{column}{6cm}
+%       \begin{itemize}
+%       \item Full Boltzmann Solvers
+%         \begin{itemize}
+%         \item Mesh-based methods
+%           \begin{itemize}
+%           \item Discrete ordinates
+%           \item Sparse grids
+%           \item Spectral and finite differences
+%           \end{itemize}
+%         \item Mesh-free
+%           \begin{itemize}
+%           \item Monte Carlo
+%           \end{itemize}
+%         \end{itemize}
+%       \end{itemize}
+%     \end{column}
+%     \begin{column}{6cm}
+%       \begin{itemize}
+%       \item Approximate methods
+%         \begin{itemize}
+%         \item Cooling functions
+%         \item Leakage
+%         \item Flux-limited Diffusion
+%         \item Analytic moment closures
+%         \end{itemize}
+%       \item Hybrid methods
+%         \begin{itemize}
+%         \item Moment methods with flexible closures
+%         \item Diffusion + leakage, etc.
+%         \end{itemize}
+%       \end{itemize}
+%     \end{column}
+%   \end{columns}
+% \end{frame}
+
+
+% \begin{frame}
+%   \frametitle{Transport Limits}
+%   \begin{itemize}
+%   \item Characterized by optical depth $\tau$ s.t. $I_\nu = I_{\nu}(s_0) e^{-\tau (s_0, s)}$
+%     \begin{itemize}
+%     \item Effective ``scattering optical depth'' also matters
+%     \end{itemize}
+%   \end{itemize}
+%   \vspace{1cm}
+%   \resizebox{12cm}{!}{
+%     \begin{tikzpicture}
+%       \draw[ultra thick, black, ->] (0,0) -- ++(8,0);
+%       % node[below] {$\tau$};
+% 
+%       \node[above,inner sep=0pt] at (0,0.25)
+%       {\includegraphics[height=1.5cm]{The_Sun_by_the_Atmospheric_Imaging_Assembly_of_NASA's_Solar_Dynamics_Observatory.jpg}};
+% 
+%       \node[above,inner sep=0pt] at (8,0.25)
+%       {\includegraphics[height=1.5cm]{ns-manhattan}};
+% 
+%       \node[above,inner sep=0pt] at (4,0.25)
+%       {\includegraphics[height=1.5cm]{disk_image_no_text}};
+% 
+%       \node[below,align=center] at (0,-0.25)
+%       {$\tau \ll 1$\\free-streaming};
+% 
+%       \node[below,align=center] at (8,-0.25)
+%       {$\tau \gg 1$\\diffusion};
+% 
+%       \node[below,align=center] at (4,-0.25)
+%       {Must solve\\full Boltzmann\\Equation};
+% 
+%     \end{tikzpicture}
+%   }
+% \end{frame}
+
+\begin{frame}
+  \frametitle{Relevant Neutrino Interactions}
+  \begin{tiny}
+    \begin{tabular}{l | l | l }
+    \hline
+    \textbf{Type}&\textbf{Processes}&\textbf{Corrections/Approximations}\\
+    \hline
+    % \textbf{Emission}&&\\
+    \hline
+    Abs./Emis. on Neutrons & 
+                             \begin{tabular}{@{}l@{}}
+                               $\nu_e + n \leftrightarrow e^- + p$\\
+                               $\nu_\mu + n \leftrightarrow \mu^- + p$
+                             \end{tabular}
+                 & 
+                             \begin{tabular}{@{}l@{}}
+                               Blocking/Stimulated
+                               Abs.\\
+                               Weak
+                               Magnetism\\
+                               Recoil
+                             \end{tabular}\\
+    \hline
+    Abs./Emis. on Protons & 
+                            \begin{tabular}{@{}l@{}}
+                              $\bar{\nu}_e + p \leftrightarrow e^+ +
+                              n$\\
+                              $\bar{\nu}_\mu + p \leftrightarrow \mu^+
+                              + n$\\
+                            \end{tabular}
+                 & 
+                             \begin{tabular}{@{}l@{}}
+                               Blocking/Stimulated
+                               Abs.\\
+                               Weak
+                               Magnetism\\
+                               Recoil
+                             \end{tabular}\\
+    \hline
+    Abs./Emis. on Ions & $\nu_eA \leftrightarrow A'e^-$ & 
+                                                                    \begin{tabular}{@{}l@{}}
+                                                                      Blocking/Stimulated Abs.\\
+                                                                      Recoil
+                                                                    \end{tabular}\\
+    \hline
+    Electron Capture on Ions & $e^- + A \leftrightarrow A' + \nu_e$ &
+                                                                                \begin{tabular}{@{}l@{}}
+                                                                                  Blocking/Stimulated Abs.\\
+                                                                                  Recoil
+                                                                                \end{tabular}\\
+                                                             
+    \hline
+    $e^+-e^-$ Annihilation & $e^+e^- \leftrightarrow \nu_i\bar{\nu}_i$&
+                                                                    \begin{tabular}{@{}l@{}}
+                                                                      single-$\nu$
+                                                                      Blocking\\
+                                                                      Recoil
+                                                                    \end{tabular}\\
+    \hline
+    $n_i$-$n_i$ Brehmsstrahlung & $n_i^1 + n_i^2 \to n_i^3 +
+                                      n_i^4 + \nu_i\bar{\nu}_i$ 
+                                    & 
+                                                \begin{tabular}{@{}l@{}}
+                                                  single-$\nu$ Blocking\\
+                                                  Recoil
+                                                \end{tabular}\\
+      \hline
+      Proton scattering & $\nu_i + p \leftrightarrow \nu_i + p$
+                                    & elastic/inelastic\\
+      \hline
+      Neutron scattering & $\nu_i + n \leftrightarrow \nu_i + n$
+                                    & elastic/inealstic\\
+      \hline
+      Heavy ion scattering & $\nu_i + A \leftrightarrow \nu_i + A$
+                                    &
+                                      \begin{tabular}{@{}l@{}}
+                                        ion-ion correlation\\
+                                        electron polarization\\
+                                        form-factor
+                                      \end{tabular}\\
+      \hline
+    \end{tabular}
+  \end{tiny}
+  \begin{itemize}
+  \item And this is ignoring Neutrino oscillations!
+  \end{itemize}
+  {\footnotesize Burrows, Reddy, Thompson, NPA \textbf{177}, 356, (2006)}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Accretion Rates}
+  \begin{columns}
+    \begin{column}{4cm}
+      \resizebox{4cm}{!}{
+        \begin{tikzpicture}
+          \tikzfading[name=fade inside,
+          inner color=transparent!50,
+          outer color=transparent!50]
+          
+          \coordinate (origin) at (0,0);
+          \pgfmathsetmacro{\dbx}{0.5}
+          \pgfmathsetmacro{\dby}{0.05}
+          \pgfmathsetmacro{\dex}{2.}
+          \pgfmathsetmacro{\dey}{0.25}
+          \pgfmathsetmacro{\dcc}{2.1}
+          \pgfmathsetmacro{\tcx}{5.0}
+
+          % bh
+          \shade[ball color=black] (origin) circle (0.25);
+
+          % vectors
+          \draw[red, ultra thick,->] (2, 1) -- (1,0.5) node[below] {\color{red} $F_{grav}$};
+          \draw[blue, ultra thick, ->] (2, 1) -- (3,1.5) node[above] {\color{blue} $F_{rad}$};
+
+          % particle
+          \shade[ball color=orange] (2,1) circle (0.25);
+
+        \end{tikzpicture}
+      }
+    \end{column}
+    \begin{column}{8cm}
+      \begin{center}
+        \includegraphics[width=0.9\textwidth]{mdot_edd}
+      \end{center}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Accretion Rates}
+  \begin{columns}
+    \begin{column}{4cm}
+      \resizebox{4cm}{!}{
+        \begin{tikzpicture}
+          \tikzfading[name=fade inside,
+          inner color=transparent!50,
+          outer color=transparent!50]
+          
+          \coordinate (origin) at (0,0);
+          \pgfmathsetmacro{\dbx}{0.5}
+          \pgfmathsetmacro{\dby}{0.05}
+          \pgfmathsetmacro{\dex}{2.}
+          \pgfmathsetmacro{\dey}{0.25}
+          \pgfmathsetmacro{\dcc}{2.1}
+          \pgfmathsetmacro{\tcx}{5.0}
+
+          % bh
+          \shade[ball color=black] (origin) circle (0.25);
+
+          % vectors
+          \draw[red, ultra thick,->] (2, 1) -- (1,0.5) node[below] {\color{red} $F_{grav}$};
+          \draw[blue, ultra thick, ->] (2, 1) -- (3,1.5) node[above] {\color{blue} $F_{rad}$};
+
+          % particle
+          \shade[ball color=orange] (2,1) circle (0.25);
+
+        \end{tikzpicture}
+      }
+    \end{column}
+    \begin{column}{8cm}
+      \begin{center}
+        \includegraphics[width=0.9\textwidth]{mdot_edd_nu}
+      \end{center}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \frametitle{How Much Does Transport Matter for disks?}
+  \begin{itemize}
+  \item Interactions scaling/nucleon:
+    \begin{itemize}
+    \item $T^6$ typical in disks. Can be as sharp as $T^8$!
+    \end{itemize}
+  \end{itemize}
+  \resizebox{12cm}{!}{
+    \begin{tikzpicture}
+      \coordinate (origin) at (0,0);
+
+      \draw[blue] (origin) -- (5,3);
+
+      \node[left] (tau1) at (0,2) {$\tau=1$};
+      \draw[dashed,gray] (tau1) -- ++(5.5,0);
+
+      \node[below] (m1) at (10./3.,0) {$10^0$};
+      \draw[dashed,gray] (m1) -- ++(0,3.75)
+      node[above] {\color{black}$10^{-1}$};
+      
+      \coordinate(tau2) at (0,1);
+      \draw[dashed,gray] (tau2) -- ++(5,0);
+
+      \node[below](m2) at (5./3.,0) {$10^{-1}$};
+      \draw[dashed, gray] (m2) -- ++(0, 3.75)
+      node[above] {\color{black}$10^{-2}$};
+
+      \node[left] at (origin) {$\tau\ll 1$};
+      \draw[ultra thick, black,->] (origin)
+      -- ++(5, 0) node[below] {$\dot{M} (M_\odot/s)$};
+      \draw[ultra thick, black, ->] (origin)
+      -- ++(0, 3) node[left] {$\tau_\nu$};
+      \draw[ultra thick, black, ->] (0,3.5)
+      -- ++(5,0) node[above] {$M_d (M_\odot)$};
+
+      \draw[<-,visible on=<1->] (5.2,3) -- ++(0.25,0) node[right,align=left]
+      {\footnotesize \color{red}stay tuned};
+      %\node[inner sep=0pt,right, visible on=<2>] at (5,3) {\includegraphics[width=1cm]{curtis-pic}};
+      \draw[<-,visible on=<1->] (5.2,2) -- ++(0.25,0) node[right,align=left]
+      {\footnotesize abs. matters};
+     
+      \draw[<-] (5.2,1) -- ++(0.25,0) node[right,align=left]
+      {\footnotesize emiss. doms.};
+
+      \draw[<-] (0,-0.2) -- ++(0,-0.25) node[below,align=center]
+      {\footnotesize no ignition};
+    \end{tikzpicture}
+    }
+\end{frame}
+
+\begin{comment}
+\begin{frame}
+  \frametitle{Digging a Little Deeper with a Collapsar Disk}
+  \begin{columns}
+    \begin{column}{6cm}
+  \resizebox{\columnwidth}{!}{
+    \begin{tikzpicture}
+      \coordinate (origin) at (0,0);
+
+      \draw[blue] (origin) -- (5,3);
+
+      \node[left] (tau1) at (0,2) {$\tau=1$};
+      \draw[dashed,gray] (tau1) -- ++(5.5,0);
+
+      \node[below] (m1) at (10./3.,0) {$10^0$};
+      \draw[dashed,gray] (m1) -- ++(0,3.75)
+      node[above] {\color{black}$10^{-1}$};
+      
+      \coordinate(tau2) at (0,1);
+      \draw[dashed,gray] (tau2) -- ++(5,0);
+
+      \node[below](m2) at (5./3.,0) {$10^{-1}$};
+      \draw[dashed, gray] (m2) -- ++(0, 3.75)
+      node[above] {\color{black}$10^{-2}$};
+
+      \node[left] at (origin) {$\tau\ll 1$};
+      \draw[ultra thick, black,->] (origin)
+      -- ++(5, 0) node[below] {$\dot{M} (M_\odot/s)$};
+      \draw[ultra thick, black, ->] (origin)
+      -- ++(0, 3) node[left] {$\tau_\nu$};
+      \draw[ultra thick, black, ->] (0,3.5)
+      -- ++(5,0) node[above] {$M_d (M_\odot)$};
+
+      \draw[<-] (5.2,1) -- ++(0.25,0) node[right,align=left]
+      {\footnotesize emiss. doms.};
+
+      \draw (5./4.,3./4.) circle (0.1);
+    \end{tikzpicture}
+  }
+\end{column}
+\begin{column}{6cm}
+      \resizebox{\columnwidth}{!}{
+        \begin{tikzpicture}
+          \coordinate (origin) at (0,0);
+          \pgfmathsetmacro{\pi}{3.14159}
+          \pgfmathsetmacro{\dbx}{0.5}
+          \pgfmathsetmacro{\dby}{0.05}
+          \pgfmathsetmacro{\dex}{2.}
+          \pgfmathsetmacro{\dey}{0.25}
+          \pgfmathsetmacro{\dcc}{2.1}
+          \pgfmathsetmacro{\tcx}{5.0}
+          \pgfmathsetmacro{\rstar}{5}
+          \pgfmathsetmacro{\wstar}{0.25}
+          \pgfmathsetmacro{\wjet}{0.75}
+          \pgfmathsetmacro{\tangle}{{45}}
+          \pgfmathsetmacro{\tsx}{{(\rstar+\wstar)*cos(\tangle)}}
+          \pgfmathsetmacro{\tsy}{{(\rstar+\wstar)*sin(\tangle)}}
+
+          \pgfmathsetmacro{\cangle}{15}
+          \pgfmathsetmacro{\cx}{(\rstar-\wstar)*cos(\cangle)}
+          \pgfmathsetmacro{\cy}{(\rstar-\wstar)*sin(\cangle)}
+          % \pgfmathsetmacro{\cend}{\dex + 0.1}
+          \pgfmathsetmacro{\cend}{\dbx + 0.1}
+
+          \newcommand{\msize}{\huge}
+
+          % star
+          \fill [color=red] (origin) circle (\rstar+\wstar);
+          \fill [color=white] (origin) circle (\rstar-\wstar);
+
+          % circularization
+          \fill[color=red,
+          left color=orange,
+          middle color=orange,
+          right color=red]
+          (\cx,\cy) to [bend left=10] (\cend,0)
+          to [bend left=10] (\cx,-\cy)
+          to [bend right=20] cycle;
+          
+          \draw[orange,ultra thick]
+          (\cx,\cy) to [bend left=10] (\cend, 0)
+          to [bend left=10] (\cx,-\cy);
+
+          \fill[color=red,
+          right color=orange,
+          middle color=orange,
+          left color=red]
+          (-\cx,\cy) to [bend right=10] (-\cend,0)
+          to [bend right=10] (-\cx,-\cy)
+          to [bend left=20] cycle;
+          
+          \draw[orange,ultra thick]
+          (-\cx,\cy) to [bend right=10] (-\cend, 0)
+          to [bend right=10] (-\cx,-\cy);
+
+          % \foreach \i in {-1,1}
+          % {
+          %   % disk
+          %   \fill[color=orange]
+          %   (\i*\dbx,\dby) -- (\i*\dex,\dey)
+          %   .. controls (\i*\dcc,0) .. (\i*\dex,-\dey)
+          %   -- (\i*\dbx,-\dby) -- cycle;
+          % }
+          
+          % jet
+          \fill[color=blue] (origin) -- (-\wjet,1.25*\rstar) -- ++(2*\wjet,0) -- cycle;
+
+          % bh
+          \shade[ball color=black] (origin) circle (0.25);
+
+          % wind
+          \draw[deepgreen,ultra thick, ->]
+          ({0.5*(\dbx + \dex)},\dey) -- ++(2,2);
+          \draw ({0.5*(\dbx + \dex) + 1},{(\dey+1)})
+          node[above,align=center,rotate=45]
+          {\color{deepgreen}\msize wind};
+          \draw[deepgreen,ultra thick, ->]
+          ({-0.5*(\dbx + \dex)},\dey) -- ++(-2,2);
+          \draw ({-(0.5*(\dbx + \dex) + 1)},{(\dey+1)})
+          node[above,align=center,rotate=-45]
+          {\color{deepgreen}\msize wind};          
+
+          % text
+          \draw[<-,orange, ultra thick] (\dex-0.1,-\dey-0.1)
+          -- ++(3,-5) -- ++(1,0)
+          node[right,align=left]
+          {\msize \color{orange}Disk};
+          
+          \draw[<-,black, ultra thick] (-0.25,-0.25)
+          -- ++(-3,-5) -- ++(-1,0)
+          node[left,align=right]
+          {\msize \color{black}Black Hole\\ \msize $\sim 3 M_{\odot}$};
+          
+          \draw[<-,red,ultra thick] (\tsx,\tsy)
+          -- ++(1,1) -- ++(1,0)
+          node[right,align=left]
+          {\msize \color{red} Stellar\\ \msize envelope};
+
+          \draw[<-,blue,ultra thick] (0, 1.25*\rstar) -- ++(0,1)
+          node[above,align=center] {\msize \color{blue} Jet};
+
+          \draw[<-,black,ultra thick]
+          ({0.5*(\dex+\rstar)},0) -- ++(2,0) node[right,align=left]
+          {\msize Circularizing\\ \msize material};
+          
+          \let\msize\undefined
+        \end{tikzpicture}
+      }
+    \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Stationary Disk, No Ye equilibrium!}
+  \setlength{\unitlength}{1cm}
+  \begin{picture}(12,8)
+    \visible<1>{
+      \put(2, 0.5){
+        \includegraphics[height=0.9\textheight]{collapsar/ye_statistics}
+      }
+    }
+    \visible<2->{
+      \put(0,1) {
+        \includegraphics[width=0.5\textwidth]{collapsar/ye_statistics}
+      }
+      \put(6,4) {
+        \includegraphics[width=0.5\textwidth]{collapsar/rho_Ye_snap_t5000}
+      }
+      \put(5,0.0) {
+        \includegraphics[width=0.6\textwidth]{collapsar/selected_traces_lattitude_cut}
+      }
+      \put(0,0){
+        {\footnotesize Miller et al., ApJ \textbf{902}, 66 (2020)}
+      }
+    }
+  \end{picture}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Turbulence and $Y_e$}
+  \resizebox{12cm}{!}{
+    \begin{tikzpicture}
+      \coordinate(origin) at (-2,0);
+
+      \draw[ultra thick, black, ->] (origin) -- ++ (0, 4)
+      node[left] {$z$};
+
+      \draw[ultra thick,colormorph={0.8pt}{red}{blue}] (6,0) -- ++(0,4);
+      \node[right] at (6,0) {$Y_e^{eq}\sim 0.1$};
+      \node[right] at (6,4) {$Y_e^{eq}\sim 0.4$};
+
+      \draw[thick,
+      decoration={aspect=0.31,segment length=7mm,amplitude=2cm, coil},
+      colormorph={0.4pt}{deepblue}{deepred},
+      decorate,arrows={<[bend]-}] (3,4) -- (3,1);
+      \node[draw,fill=white,circle,inner sep=1pt] at (3,1) {};
+      \node[left] at (3,1) {$Y_e$ small near equator};
+      \node[left] at (1.,2.5) {$\nu$'s slowly $\uparrow Y_e$};
+      \node[left] at (3,4) {$Y_e < Y_e^{eq}$};
+    \end{tikzpicture}
+  }
+\end{frame}
+
+\begin{frame}
+  \frametitle{$Y_e$ is set by the balance of Turbulence and
+    Neutrinos!}
+  \begin{displaymath}
+      Y_{\rm e}(z/H) = \braket{\text{min}(Y_{\rm e})}_{\text{trc}}
+      + \braket{\frac{d Y_{\rm e}}{dt}}_{t,\text{trc}} \paren{H\braket{\frac{dz}{dt}}_{t,\text{trc}}^{-1}}\paren{\frac{z}{H} - \braket{\text{min}(z/H)}_{\text{trc}}}
+    \end{displaymath}
+    \begin{columns}
+      \begin{column}{6cm}
+        \includegraphics[width=\columnwidth]{collapsar/vertical-structure-params}
+      \end{column}
+      \begin{column}{6cm}
+        \includegraphics[width=\columnwidth]{collapsar/model-vs-vertical-structure}
+      \end{column}
+    \end{columns}
+    {\footnotesize Miller et al., ApJ \textbf{902}, 66 (2020)}
+\end{frame}
+\end{comment}
+
+% \begin{frame}
+%   \frametitle{Neutrino Transport}
+%   \begin{center}
+%     % \includegraphics[height=0.9\textheight]{tau_frames/frame_00531}
+%     \animategraphics[height=0.9\textheight,every=10,autoplay,loop,controls=off]
+%     {20}{tau_frames/frame_}{00001}{00983}
+%   \end{center}
+% \end{frame}
+
+\backupend
+
+\end{document}
